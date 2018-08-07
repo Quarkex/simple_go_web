@@ -48,19 +48,6 @@ func getTitle(w http.ResponseWriter, r *http.Request) (string, error) {
     }
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-    title := r.URL.Path[len("/"):]
-    if title == "" {
-        title = "index"
-    }
-    p, err := loadPage(title)
-    if err != nil {
-        p = &Page{Title: title}
-    }
-    t, _ := template.ParseFiles("templates/main.html")
-    t.Execute(w, p)
-}
-
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
     err := templates.ExecuteTemplate(w, tmpl + ".html", p)
     if err != nil {
