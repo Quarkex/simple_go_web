@@ -11,7 +11,7 @@ import (
 )
 
 var templates = template.Must(template.ParseGlob("templates/*"))
-var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
+var validPath = regexp.MustCompile("^/(edit|save|view|static)/([a-zA-Z0-9]+)$")
 
 type Page struct {
     Title string
@@ -108,9 +108,13 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 }
 
 func main() {
+    fs := http.FileServer(http.Dir("./static"))
+
+    http.Handle("/static/", http.StripPrefix("/static/", fs))
     http.HandleFunc("/", makeHandler(viewHandler))
     http.HandleFunc("/view/", makeHandler(viewHandler))
     http.HandleFunc("/edit/", makeHandler(editHandler))
     http.HandleFunc("/save/", makeHandler(saveHandler))
+
     log.Fatal(http.ListenAndServe(":8080", nil))
 }
