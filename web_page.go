@@ -15,12 +15,12 @@ var validPath = regexp.MustCompile("^/(edit|save|view|static)/([a-zA-Z0-9]+)$")
 
 type Page struct {
     Title string
-    Body  []byte
+    Body  template.HTML
 }
 
 func (p *Page) save() error {
     filename := "pages/" + p.Title + ".txt"
-    return ioutil.WriteFile(filename, p.Body, 0600)
+    return ioutil.WriteFile(filename, []byte(p.Body), 0600)
 }
 
 func loadPage(title string) (*Page, error) {
@@ -29,7 +29,7 @@ func loadPage(title string) (*Page, error) {
     if err != nil {
         return nil, err
     }
-    return &Page{Title: title, Body: body}, nil
+    return &Page{Title: title, Body: template.HTML(body)}, nil
 }
 
 func getTitle(w http.ResponseWriter, r *http.Request) (string, error) {
@@ -46,19 +46,6 @@ func getTitle(w http.ResponseWriter, r *http.Request) (string, error) {
         }
         return m[2], nil // The title is the second subexpression.
     }
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-    title := r.URL.Path[len("/"):]
-    if title == "" {
-        title = "index"
-    }
-    p, err := loadPage(title)
-    if err != nil {
-        p = &Page{Title: title}
-    }
-    t, _ := template.ParseFiles("templates/main.html")
-    t.Execute(w, p)
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
@@ -98,7 +85,7 @@ func editHandler(w http.ResponseWriter, r *http.Request, title string) {
 
 func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
     body := r.FormValue("body")
-    p := &Page{Title: title, Body: []byte(body)}
+    p := &Page{Title: title, Body: template.HTML(body)}
     err := p.save()
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
