@@ -1,21 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html class="no-js" lang="en" dir="ltr">
     <head>
-        <title>{{.Title}}</title>
         <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+        <title>{{.Title}}</title>
+
+        <link rel="stylesheet" href="/static/css/foundation.css">
         <link rel="stylesheet" href="/static/codemirror/lib/codemirror.css">
+        <link rel="stylesheet" href="/static/css/app.css">
+
         <script src="/static/codemirror/lib/codemirror.js"></script>
         <script src="/static/codemirror/mode/xml/xml.js"></script>
     </head>
     <body>
-        <h1>Editing {{.Title}}</h1>
+        <div class="grid-container">
+            <form action="/save/{{.Title}}" method="POST">
+                <div class="grid-x grid-padding-x">
+                    <div class="large-12 cell">
+                        <h1>Editing {{.Title}}</h1>
+                    </div>
+                </div>
 
-        <form action="/save/{{.Title}}" method="POST">
-            <div><textarea id="editor" name="body" rows="20" cols="80">{{.Body}}</textarea></div>
-            <div><input type="submit" value="Save"></div>
-        </form>
+                <div class="grid-x grid-padding-x">
+                    <div class="large-12 cell">
+                        <textarea id="editor" name="body">{{.Body}}</textarea>
+                    </div>
+                    <div class="large-12 cell">
+                        <input class="expanded button" type="submit" value="Save">
+                    </div>
+                </div>
+            </form>
 
+        </div>
+
+        <script src="/static/js/vendor/jquery.js"></script>
+        <script src="/static/js/vendor/what-input.js"></script>
+        <script src="/static/js/vendor/foundation.js"></script>
         <script>
             var myTextarea = document.getElementById("editor");
             var editor = CodeMirror.fromTextArea(myTextarea, {
@@ -23,5 +45,6 @@
                 indentUnit: 4
             });
         </script>
+        <script src="/static/js/app.js"></script>
     </body>
 </html>
