@@ -1,6 +1,27 @@
-<h1>Editing {{.Title}}</h1>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{.Title}}</title>
+        <meta charset="utf-8">
 
-<form action="/save/{{.Title}}" method="POST">
-<div><textarea name="body" rows="20" cols="80">{{printf "%s" .Body}}</textarea></div>
-<div><input type="submit" value="Save"></div>
-</form>
+        <link rel="stylesheet" href="/static/codemirror/lib/codemirror.css">
+        <script src="/static/codemirror/lib/codemirror.js"></script>
+        <script src="/static/codemirror/mode/xml/xml.js"></script>
+    </head>
+    <body>
+        <h1>Editing {{.Title}}</h1>
+
+        <form action="/save/{{.Title}}" method="POST">
+            <div><textarea id="editor" name="body" rows="20" cols="80">{{printf "%s" .Body}}</textarea></div>
+            <div><input type="submit" value="Save"></div>
+        </form>
+
+        <script>
+            var myTextarea = document.getElementById("editor");
+            var editor = CodeMirror.fromTextArea(myTextarea, {
+                lineNumbers: true,
+                indentUnit: 4
+            });
+        </script>
+    </body>
+</html>
