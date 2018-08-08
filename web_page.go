@@ -19,7 +19,7 @@ type Page struct {
 }
 
 func (p *Page) save() error {
-    filename := "pages/" + p.Title + ".txt"
+    filename := "pages/" + p.Title + ".htm"
     dirname := filepath.Dir(filename)
 
     err := os.MkdirAll(dirname,0700)
@@ -31,7 +31,7 @@ func (p *Page) save() error {
 }
 
 func loadPage(title string) (*Page, error) {
-    filename := "pages/" + title + ".txt"
+    filename := "pages/" + title + ".htm"
     body, err := ioutil.ReadFile(filename)
     if err != nil {
         return nil, err
