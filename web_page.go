@@ -19,7 +19,7 @@ type Page struct {
 }
 
 func (p *Page) save() error {
-    filename := "pages/" + p.Title + ".txt"
+    filename := "pages/" + p.Title + ".htm"
     dirname := filepath.Dir(filename)
 
     err := os.MkdirAll(dirname,0700)
@@ -31,7 +31,7 @@ func (p *Page) save() error {
 }
 
 func loadPage(title string) (*Page, error) {
-    filename := "pages/" + title + ".txt"
+    filename := "pages/" + title + ".htm"
     body, err := ioutil.ReadFile(filename)
     if err != nil {
         return nil, err
@@ -106,7 +106,11 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
-    http.Redirect(w, r, "/view/"+title, http.StatusFound)
+    if title == "index" {
+        http.Redirect(w, r, "/", http.StatusFound)
+    } else {
+        http.Redirect(w, r, "/"+title, http.StatusFound)
+    }
 }
 
 func main() {
