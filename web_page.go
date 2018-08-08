@@ -1,6 +1,8 @@
 package main
 
 import (
+    "os"
+    "path/filepath"
     "html/template"
     "io/ioutil"
     "net/http"
@@ -18,6 +20,13 @@ type Page struct {
 
 func (p *Page) save() error {
     filename := "pages/" + p.Title + ".txt"
+    dirname := filepath.Dir(filename)
+
+    err := os.MkdirAll(dirname,0700)
+    if err != nil {
+        return err
+    }
+
     return ioutil.WriteFile(filename, []byte(p.Body), 0600)
 }
 
