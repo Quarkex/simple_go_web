@@ -1,17 +1,17 @@
 package main
 
 import (
+    "os"
+    "path/filepath"
     "html/template"
     "io/ioutil"
     "net/http"
-    "regexp"
     "strings"
     "errors"
     "log"
 )
 
 var templates = template.Must(template.ParseGlob("templates/*"))
-var validPath = regexp.MustCompile("^/(edit|save|view|static)/([a-zA-Z0-9]+)$")
 
 type Page struct {
     Title string
@@ -20,6 +20,13 @@ type Page struct {
 
 func (p *Page) save() error {
     filename := "pages/" + p.Title + ".txt"
+    dirname := filepath.Dir(filename)
+
+    err := os.MkdirAll(dirname,0700)
+    if err != nil {
+        return err
+    }
+
     return ioutil.WriteFile(filename, []byte(p.Body), 0600)
 }
 
@@ -35,16 +42,24 @@ func loadPage(title string) (*Page, error) {
 func getTitle(w http.ResponseWriter, r *http.Request) (string, error) {
     if r.URL.Path == "/" {
         return "index", nil
-    } else if len( strings.Split(r.URL.Path, "/") ) == 2 {
-        m := strings.Split(r.URL.Path, "/")
-        return m[1], nil
     } else {
-        m := validPath.FindStringSubmatch(r.URL.Path)
-        if m == nil {
-            http.NotFound(w, r)
-            return "", errors.New("Invalid Page Title")
+        m := strings.Split(r.URL.Path, "/")
+        path := []string {}
+        for i, v := range m {
+            if (i == 0) {
+                continue
+            } else if (i == 1) {
+                if v == "edit" || v == "save" || v == "view" || v == "static" {
+                    continue
+                }
+            }
+            path = append(path, v)
+            if v == ".." {
+                http.NotFound(w, r)
+                return "", errors.New("Invalid Page Title")
+            }
         }
-        return m[2], nil // The title is the second subexpression.
+        return strings.Join(path[:],"/"), nil
     }
 }
 
