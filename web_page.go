@@ -106,7 +106,11 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
-    http.Redirect(w, r, "/"+title, http.StatusFound)
+    if title == "index" {
+        http.Redirect(w, r, "/", http.StatusFound)
+    } else {
+        http.Redirect(w, r, "/"+title, http.StatusFound)
+    }
 }
 
 func main() {
